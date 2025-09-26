@@ -1,0 +1,54 @@
+class WordDictionary {
+    // Trie Node class
+    class TrieNode {
+        TrieNode[] children;
+        boolean isWord;
+
+        public TrieNode() {
+            children = new TrieNode[26]; // For 26 lowercase letters
+            isWord = false;
+        }
+    }
+
+    private TrieNode root;
+
+    public WordDictionary() {
+        root = new TrieNode();
+    }
+    
+    // Add word to Trie
+    public void addWord(String word) {
+        TrieNode node = root;
+        for (char c : word.toCharArray()) {
+            int index = c - 'a';
+            if (node.children[index] == null) {
+                node.children[index] = new TrieNode();
+            }
+            node = node.children[index];
+        }
+        node.isWord = true;
+    }
+    
+    // Search word (with '.' handling)
+    public boolean search(String word) {
+        return dfs(word, 0, root);
+    }
+
+    private boolean dfs(String word, int i, TrieNode node) {
+        if (node == null) return false;
+        if (i == word.length()) return node.isWord;
+        
+        char c = word.charAt(i);
+        if (c == '.') {
+            // Try all possible children
+            for (TrieNode child : node.children) {
+                if (child != null && dfs(word, i + 1, child)) {
+                    return true;
+                }
+            }
+            return false;
+        } else {
+            return dfs(word, i + 1, node.children[c - 'a']);
+        }
+    }
+}
